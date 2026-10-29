@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Sign in · Karka AI and Tech Academy</title>
+<meta name="theme-color" content="#000000">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;700&family=Manrope:wght@400;500;700&display=swap">
+<style>
+:root{--bg:#000000;--ink:#F4F6F8;--muted:#A3A8B3;--hair:rgba(255,255,255,.16);--pk:#9333EA;--pk-hi:#C084FC;--bl:#C4A5FF;
+  --f-display:"Unbounded",system-ui,sans-serif;--f-body:"Manrope",system-ui,sans-serif;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{min-height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.6 var(--f-body);display:grid;place-items:center;
+  padding:max(20px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(20px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));
+  background-image:radial-gradient(60vmax 40vmax at 85% -10%,rgba(147,51,234,.22),transparent 60%),radial-gradient(50vmax 40vmax at -10% 110%,rgba(109,40,217,.28),transparent 60%)}
+.card{width:100%;max-width:420px;border:1px solid var(--hair);border-radius:22px;padding:28px 24px;
+  background:linear-gradient(145deg,rgba(255,255,255,.09),rgba(255,255,255,.03));-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+  box-shadow:0 14px 44px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.18)}
+.back{display:inline-block;color:var(--muted);text-decoration:none;font-size:.8rem;margin-bottom:14px}
+.back:hover{color:var(--pk-hi)}
+h1{font:500 1.35rem/1.25 var(--f-display);margin:0 0 4px}
+.sub{color:var(--muted);font-size:.9rem;margin:0 0 20px}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:5px;border:1px solid var(--hair);border-radius:14px;background:rgba(255,255,255,.04);margin-bottom:18px}
+.tab{font:700 .75rem var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:none;border:0;border-radius:10px;padding:11px 8px;cursor:pointer;min-height:44px}
+.tab[aria-selected=true]{background:var(--pk);color:#FFFFFF}
+form{display:grid;gap:14px}
+.hide{display:none!important}
+label{font:500 .68rem var(--f-body);letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+input{width:100%;margin-top:8px;font:500 1rem var(--f-body);padding:14px 16px;border:1px solid var(--hair);border-radius:14px;background:rgba(255,255,255,.07);color:var(--ink)}
+input:focus{outline:none;border-color:var(--pk);box-shadow:0 0 0 3px rgba(147,51,234,.25)}
+.btn{display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;font:700 .85rem var(--f-body);letter-spacing:.08em;text-transform:uppercase;border-radius:999px;border:1px solid var(--hair);background:rgba(255,255,255,.06);color:var(--ink);cursor:pointer;padding:14px 18px;transition:transform .15s,box-shadow .2s,border-color .2s}
+.btn:hover{border-color:var(--pk);transform:translateY(-1px)}
+.btn:disabled{opacity:.6;cursor:wait}
+.btn.primary{background:var(--pk);border-color:var(--pk);color:#FFFFFF;box-shadow:0 0 26px rgba(147,51,234,.45)}
+.btn.primary:hover{background:var(--pk-hi);border-color:var(--pk-hi)}
+.or{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;margin:18px 0}
+.or::before,.or::after{content:"";flex:1;height:1px;background:var(--hair)}
+.demo{border-color:rgba(196,165,255,.5);color:var(--bl)}
+.demo:hover{border-color:var(--bl);box-shadow:0 0 24px rgba(109,40,217,.55)}
+.hint{font-size:.78rem;color:var(--muted);margin:8px 2px 0;text-align:center}
+.msg{min-height:1.2em;font-size:.85rem;color:var(--pk-hi);margin:0}
+.foot{margin-top:18px;text-align:center;font-size:.8rem;color:var(--muted)}
+.foot a{color:var(--bl)}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+</style>
+</head>
+<body>
+<main class="card">
+  <a class="back" href="/">← Back to Karka</a>
+  <h1 id="title">Welcome back</h1>
+  <p class="sub" id="sub">Sign in to your Karka account.</p>
+
+  <div class="tabs" role="tablist" aria-label="Account">
+    <button class="tab" role="tab" id="tIn" aria-selected="true" type="button">Sign in</button>
+    <button class="tab" role="tab" id="tUp" aria-selected="false" type="button">Sign up</button>
+  </div>
+
+  <form id="fIn" novalidate>
+    <div><label for="iem">Email</label><input id="iem" type="email" autocomplete="username" placeholder="you@example.com" required></div>
+    <div><label for="ipw">Password</label><input id="ipw" type="password" autocomplete="current-password" placeholder="Your password" required></div>
+    <p class="msg" id="mIn" role="alert" aria-live="polite"></p>
+    <button class="btn primary" id="bIn" type="submit">Sign in</button>
+  </form>
+
+  <form id="fUp" class="hide" novalidate>
+    <div><label for="un">Your name</label><input id="un" autocomplete="name" placeholder="e.g. Priya" required></div>
+    <div><label for="uem">Email</label><input id="uem" type="email" autocomplete="email" placeholder="you@example.com" required></div>
+    <div><label for="upw">Password</label><input id="upw" type="password" autocomplete="new-password" placeholder="At least 8 characters" minlength="8" required></div>
+    <p class="msg" id="mUp" role="alert" aria-live="polite"></p>
+    <button class="btn primary" id="bUp" type="submit">Create account</button>
+  </form>
+
+  <div class="or">or</div>
+  <button class="btn demo" id="demo" type="button">Try the admin demo</button>
+  <p class="hint">Opens the admin dashboard with sample data. Nothing is saved and no real applicant details are shown.</p>
+  <p class="foot">Karka team? <a href="/admin">Admin sign in</a></p>
+</main>
+
+<script>
+(function(){
+  var $=function(i){return document.getElementById(i)};
+  function api(u,body){
+    return fetch(u,{method:"POST",credentials:"same-origin",headers:{"Content-Type":"application/json"},body:JSON.stringify(body||{})})
+      .then(function(r){return r.json().catch(function(){return{}}).then(function(j){if(!r.ok)throw new Error(j.error||"Something went wrong. Please try again.");return j})});
+  }
+  function tab(up){
+    $("tIn").setAttribute("aria-selected",!up);$("tUp").setAttribute("aria-selected",up);
+    $("fIn").classList.toggle("hide",up);$("fUp").classList.toggle("hide",!up);
+    $("title").textContent=up?"Create your account":"Welcome back";
+    $("sub").textContent=up?"Sign up to apply faster and keep your details saved.":"Sign in to your Karka account.";
+    $("mIn").textContent=$("mUp").textContent="";
+    ($(up?"un":"iem")).focus();
+  }
+  $("tIn").onclick=function(){tab(false)};$("tUp").onclick=function(){tab(true)};
+  if(location.hash==="#signup")tab(true);
+
+  function run(btn,msg,fn){
+    msg.textContent="";btn.disabled=true;var t=btn.textContent;btn.textContent="Please wait...";
+    return fn().catch(function(e){msg.textContent=e.message}).then(function(){btn.disabled=false;btn.textContent=t});
+  }
+  $("fIn").onsubmit=function(e){e.preventDefault();
+    if(!$("iem").value.trim()||!$("ipw").value){$("mIn").textContent="Enter your email and password.";return}
+    run($("bIn"),$("mIn"),function(){return api("/api/auth/login",{email:$("iem").value,password:$("ipw").value}).then(function(){location.href="/"})});
+  };
+  $("fUp").onsubmit=function(e){e.preventDefault();
+    if(!$("un").value.trim()){$("mUp").textContent="Please enter your name.";return}
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test($("uem").value.trim())){$("mUp").textContent="Please enter a valid email.";return}
+    if($("upw").value.length<8){$("mUp").textContent="Password must be at least 8 characters.";return}
+    run($("bUp"),$("mUp"),function(){return api("/api/auth/signup",{name:$("un").value,email:$("uem").value,password:$("upw").value}).then(function(){location.href="/"})});
+  };
+  $("demo").onclick=function(){
+    var m=$("fIn").classList.contains("hide")?$("mUp"):$("mIn");
+    run($("demo"),m,function(){return api("/api/auth/demo-admin").then(function(j){location.href=j.redirect||"/admin"})});
+  };
+  // already signed in? go home
+  fetch("/api/auth/me",{credentials:"same-origin"}).then(function(r){if(r.ok)location.replace("/")}).catch(function(){});
+})();
+</script>
+</body>
+</html>

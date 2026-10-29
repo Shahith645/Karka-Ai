@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><title>Karka Admin</title>
+<style>
+:root{--bg:#000000;--card:#0D0A14;--line:rgba(255,255,255,.12);--ink:#f4f6f8;--mut:#9aa3ad;--pk:#9333EA;--bl:#C4A5FF}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,Segoe UI,sans-serif}
+.wrap{max-width:1200px;margin:0 auto;padding:16px}
+h1{font-size:1.2rem;margin:0}input,select,textarea,button{font:inherit;color:inherit;background:#1d1d23;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+button{cursor:pointer}button.p{background:var(--pk);border-color:var(--pk);color:#FFFFFF;font-weight:700}
+.login{max-width:360px;margin:12vh auto;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:24px;display:grid;gap:12px}
+.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin-bottom:14px}
+.tools{display:flex;gap:8px;flex-wrap:wrap}.stats{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 14px}.stat b{display:block;font-size:1.2rem;color:var(--bl)}
+.list{display:grid;gap:10px}.app{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;display:grid;gap:8px}
+.top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}.name{font-weight:700}.mut{color:var(--mut);font-size:.85rem}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}a.b{color:var(--bl);text-decoration:none;border:1px solid var(--line);border-radius:10px;padding:6px 10px;font-size:.85rem}
+textarea{width:100%;min-height:54px}.err{color:#ff7a7a}.demo{background:rgba(196,165,255,.12);border:1px solid rgba(196,165,255,.4);color:var(--bl);border-radius:12px;padding:10px 14px;margin-bottom:14px;font-size:.9rem}.hide{display:none!important}
+</style></head><body>
+<div id="login" class="login hide"><h1>Karka Admin</h1>
+<input id="em" type="email" placeholder="Email" autocomplete="username"><input id="pw" type="password" placeholder="Password" autocomplete="current-password">
+<button class="p" id="go">Sign in</button><div id="lerr" class="err"></div></div>
+
+<div id="dash" class="wrap hide">
+<div class="bar"><h1>Applications</h1><div class="tools"><span class="mut" id="who"></span><button id="csv">Export CSV</button><button id="out">Sign out</button></div></div>
+<div class="demo hide" id="demoBar">Demo mode: sample data only. Changes are not saved. <a href="/login#signup" style="color:inherit">Create an account</a></div>
+<div class="stats" id="stats"></div>
+<div class="bar tools"><input id="q" placeholder="Search name, phone, email, course"><select id="fs"></select><select id="fa"></select><button id="rf">Refresh</button></div>
+<div class="list" id="list"></div></div>
+
+<script>
+var ST=["New","Contacted","Interested","Enrolled","Rejected"],AU=["School student","College student","Graduate","Working professional"];
+var $=function(i){return document.getElementById(i)};
+function api(u,o){o=o||{};o.credentials="same-origin";if(o.body&&typeof o.body!=="string"){o.body=JSON.stringify(o.body);o.headers={"Content-Type":"application/json"}}
+  return fetch(u,o).then(function(r){if(r.status===401&&u.indexOf("login")<0){show(false)}return r.json().then(function(j){if(!r.ok)throw new Error(j.error||"Error");return j})})}
+function opt(sel,first,arr){sel.innerHTML="";var o=document.createElement("option");o.value="";o.textContent=first;sel.appendChild(o);arr.forEach(function(v){var x=document.createElement("option");x.value=x.textContent=v;sel.appendChild(x)})}
+opt($("fs"),"All statuses",ST);opt($("fa"),"All audiences",AU);
+function show(on){$("login").classList.toggle("hide",on);$("dash").classList.toggle("hide",!on)}
+function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!==undefined)e.textContent=x;return e}
+function qs(){var p=new URLSearchParams({q:$("q").value,status:$("fs").value,audience:$("fa").value});return p.toString()}
+function load(){api("/api/admin/applications?"+qs()).then(function(d){
+  $("demoBar").classList.toggle("hide",!d.demo);
+  var s=$("stats");s.innerHTML="";var tot=0;d.stats.forEach(function(x){tot+=x.n});
+  var t=el("div","stat");t.appendChild(el("b","",tot));t.appendChild(el("span","mut","Total"));s.appendChild(t);
+  ST.forEach(function(n){var c=d.stats.filter(function(x){return x.status===n})[0],b=el("div","stat");b.appendChild(el("b","",c?c.n:0));b.appendChild(el("span","mut",n));s.appendChild(b)});
+  var L=$("list");L.innerHTML="";if(!d.rows.length)L.appendChild(el("p","mut","No applications yet."));
+  d.rows.forEach(function(r){
+    var c=el("div","app"),top=el("div","top"),l=el("div");l.appendChild(el("div","name",r.name));l.appendChild(el("div","mut",r.audience+" · "+r.program));
+    top.appendChild(l);top.appendChild(el("div","mut",new Date(r.created_at).toLocaleString()));c.appendChild(top);
+    var row=el("div","row"),ph=r.phone.replace(/[^\d+]/g,"");
+    [["Call","tel:"+ph],["WhatsApp","https://wa.me/"+ph.replace(/\D/g,"")]].forEach(function(x){var a=el("a","b",x[0]);a.href=x[1];a.target="_blank";a.rel="noopener";row.appendChild(a)});
+    if(r.email){var m=el("a","b","Email");m.href="mailto:"+r.email;row.appendChild(m)}
+    row.appendChild(el("span","mut",r.phone+(r.email?" · "+r.email:"")));c.appendChild(row);
+    var r2=el("div","row"),sel=el("select");ST.forEach(function(v){var o=el("option","",v);o.value=v;sel.appendChild(o)});sel.value=r.status;
+    sel.onchange=function(){api("/api/admin/applications/"+r.id,{method:"PATCH",body:{status:sel.value}}).then(load)};
+    var del=el("button","","Delete");del.onclick=function(){if(confirm("Delete "+r.name+"?"))api("/api/admin/applications/"+r.id,{method:"DELETE"}).then(load)};
+    r2.appendChild(sel);r2.appendChild(del);c.appendChild(r2);
+    var n=el("textarea");n.placeholder="Private notes (saved when you click away)";n.value=r.notes||"";
+    n.onblur=function(){if(n.value!==(r.notes||""))api("/api/admin/applications/"+r.id,{method:"PATCH",body:{notes:n.value}}).then(function(){r.notes=n.value})};
+    c.appendChild(n);L.appendChild(c)});
+}).catch(function(){})}
+$("go").onclick=function(){$("lerr").textContent="";api("/api/admin/login",{method:"POST",body:{email:$("em").value,password:$("pw").value}}).then(function(d){$("pw").value="";$("who").textContent=d.email;show(true);load()}).catch(function(e){$("lerr").textContent=e.message})};
+$("pw").onkeydown=function(e){if(e.key==="Enter")$("go").click()};
+$("out").onclick=function(){api("/api/admin/logout",{method:"POST"}).then(function(){if($("demoBar").classList.contains("hide"))show(false);else location.href="/login"})};
+$("csv").onclick=function(){location.href="/api/admin/export.csv?"+qs()};
+$("rf").onclick=load;$("fs").onchange=$("fa").onchange=load;var tm;$("q").oninput=function(){clearTimeout(tm);tm=setTimeout(load,300)};
+api("/api/admin/me").then(function(d){$("who").textContent=d.demo?"Demo admin":d.email;show(true);load()}).catch(function(){show(false)});
+</script></body></html>
