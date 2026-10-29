@@ -22,7 +22,7 @@ textarea{width:100%;min-height:54px}.err{color:#ff7a7a}.demo{background:rgba(196
 
 <div id="dash" class="wrap hide">
 <div class="bar"><h1>Applications</h1><div class="tools"><span class="mut" id="who"></span><button id="csv">Export CSV</button><button id="out">Sign out</button></div></div>
-<div class="demo hide" id="demoBar">Demo mode: sample data only. Changes are not saved. <a href="/login#signup" style="color:inherit">Create an account</a></div>
+<div class="demo hide" id="demoBar">Demo mode: sample data only. Changes are not saved. <a href="/login#signup" style="color:inherit">Create an account</a> &middot; <a href="#" id="real" style="color:inherit">Sign in as real admin</a></div>
 <div class="stats" id="stats"></div>
 <div class="bar tools"><input id="q" placeholder="Search name, phone, email, course"><select id="fs"></select><select id="fa"></select><button id="rf">Refresh</button></div>
 <div class="list" id="list"></div></div>
@@ -61,6 +61,7 @@ function load(){api("/api/admin/applications?"+qs()).then(function(d){
 $("go").onclick=function(){$("lerr").textContent="";api("/api/admin/login",{method:"POST",body:{email:$("em").value,password:$("pw").value}}).then(function(d){$("pw").value="";$("who").textContent=d.email;show(true);load()}).catch(function(e){$("lerr").textContent=e.message})};
 $("pw").onkeydown=function(e){if(e.key==="Enter")$("go").click()};
 $("out").onclick=function(){api("/api/admin/logout",{method:"POST"}).then(function(){if($("demoBar").classList.contains("hide"))show(false);else location.href="/login"})};
+$("real").onclick=function(e){e.preventDefault();api("/api/admin/logout",{method:"POST"}).then(function(){$("demoBar").classList.add("hide");show(false)})};
 $("csv").onclick=function(){location.href="/api/admin/export.csv?"+qs()};
 $("rf").onclick=load;$("fs").onchange=$("fa").onchange=load;var tm;$("q").oninput=function(){clearTimeout(tm);tm=setTimeout(load,300)};
 api("/api/admin/me").then(function(d){$("who").textContent=d.demo?"Demo admin":d.email;show(true);load()}).catch(function(){show(false)});
